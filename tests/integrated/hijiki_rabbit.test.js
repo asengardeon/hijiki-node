@@ -49,18 +49,23 @@ afterEach(() => {
     mock.broker.terminate()
 })
 
+const delay = (t, val) => {
+    return new Promise(function(resolve) {
+        setTimeout(function() {
+            resolve(val);
+        }, t);
+    });
+}
 
 
 test('test publish one message', async () => {
     await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
-    setTimeout(function() {
-    }, 3000);
+    await delay(1000)
     expect(mock.result_event_list.length).toBe(1)
 })
 
 test('test_consume_a_message', async () =>{
     await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
-    setTimeout(function() {
-    }, 3000);
-    expect(mock.result_event_list.length).toEqual(1)
+    await delay(1000)
+    expect(mock.result_event_list.length).toBe(1)
 })
