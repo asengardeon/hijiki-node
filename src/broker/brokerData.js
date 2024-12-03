@@ -4,7 +4,7 @@ const BROKER_PWD = "BROKER_PWD"
 const BROKER_USERNAME = "BROKER_USERNAME"
 const BROKER_SERVER = "BROKER_SERVER"
 const BROKER_CLUSTER_SERVER = "BROKER_CLUSTER_SERVER"
-
+const RABBIT_TYPE = "RABBITMQ"
 
 
 const build_cluster_uri = (cluster_server, username, password) =>{
@@ -43,4 +43,4 @@ const get_broker_url = () => {
 }
 
 
-export {get_broker_url, init_os_environ, BROKER_SERVER, BROKER_PWD, BROKER_PORT, BROKER_CLUSTER_SERVER, BROKER_USERNAME}
+export {get_broker_url, init_os_environ, BROKER_SERVER, BROKER_PWD, BROKER_PORT, BROKER_CLUSTER_SERVER, BROKER_USERNAME, RABBIT_TYPE}
