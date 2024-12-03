@@ -14,8 +14,7 @@ test("Test call ping to HijikiBroker", async () => {
 })
 
 test("Test call connection to HijikiBroker", async () => {
-    let go;
-    go = false
+    let go = false
     try {
         let h;
         h = new HijikiBroker("", "", "", "", "", "", "")

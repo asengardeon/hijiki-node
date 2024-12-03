@@ -22,6 +22,5 @@ xtest('test_fail_ping', async () => {
         .with_password("wrong_pwd")
         .with_port(5672)
         .build()
-    let res  = await broker.ping()
-    expect(res).toBeFalsy()
+    expect(await broker.ping()).toBeFalsy()
 })
