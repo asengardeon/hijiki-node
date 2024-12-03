@@ -2,9 +2,12 @@ import HijikiQueueExchange from "../../src/broker/models/queue_exchange";
 import Publisher from "../../src/publisher/HijikiPublisher";
 import {HijikiBrokerFactory} from "../../src/broker/HijikiBrokerFacotry";
 
-let broker;
 
 class BrokerMock {
+
+    constructor() {
+        this.result_event_list = []
+    }
 
     init = async () => {
         let qs = [
@@ -29,22 +32,9 @@ class BrokerMock {
     }
 
     addSubscribers = (broker) => {
-        const qargs = {
-            'x-queue-type': 'quorum',
-            'x-dead-letter-exchange': `teste1_dlq`, 'x-delivery-limit': 10
-        }
-
-        broker.connection.createConsumer({
-            queue: 'teste1',
-            arguments: qargs,
-            queueOptions: {durable: true},
-            // Optionally ensure an exchange exists
-            exchanges: [{exchange: 'teste1_event', type: 'topic'}],
-            // With a "topic" exchange, messages matching this pattern are routed to the queue
-            queueBindings: [{exchange: 'teste1_event', routingKey: '*'}],
-        }, async (msg) => {
-            console.log('received message (teste1_event)', msg)
-        })
+       broker.add_subscriber("teste1", (msg)=>{
+           this.result_event_list.push(`received event with message: ${msg}`)
+       })
     }
 
 
@@ -56,15 +46,21 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-    mock = null
+    mock.broker.terminate()
 })
 
 
 
 test('test publish one message', async () => {
-   mock.pub.publish_message('teste1_event', '{"value": "This is the message"}')
+    await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
+    setTimeout(function() {
+    }, 3000);
+    expect(mock.result_event_list.length).toBe(1)
 })
 
 test('test_consume_a_message', async () =>{
-   mock.pub.publish_message('teste1_event', '{"value": "This is the message"}')
+    await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
+    setTimeout(function() {
+    }, 3000);
+    expect(mock.result_event_list.length).toEqual(1)
 })
