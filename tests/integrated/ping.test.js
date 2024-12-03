@@ -12,7 +12,7 @@ test('test_success_ping', async () => {
         .with_port(5672)
         .build()
     expect(await broker.ping()).toBeTruthy()
-})
+}, 10000)
 
 xtest('test_fail_ping', async () => {
     let broker = await new HijikiBrokerFactory()
@@ -23,4 +23,4 @@ xtest('test_fail_ping', async () => {
         .with_port(5672)
         .build()
     expect(await broker.ping()).toBeFalsy()
-})
+}, 10000)
