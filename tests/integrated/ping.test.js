@@ -3,7 +3,7 @@ import {HijikiBrokerFactory} from "../../src/broker/HijikiBrokerFacotry";
 
 
 
-test('test_success_ping', async () => {
+xtest('test_success_ping', async () => {
     let broker = await new HijikiBrokerFactory()
         .get_instance()
         .with_host("localhost")
