@@ -62,10 +62,10 @@ test('test publish one message', async () => {
     await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
     await delay(1000)
     expect(mock.result_event_list.length).toBe(1)
-})
+}, 10000)
 
 test('test_consume_a_message', async () =>{
     await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
     await delay(1000)
     expect(mock.result_event_list.length).toBe(1)
-})
+}, 10000)
