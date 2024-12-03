@@ -1,0 +1,59 @@
+name: Validate Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+      - fix/**
+      - feature/**
+      - chore/**
+      - doc/**
+
+jobs:
+  build_on_pull_request:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install dependencies npm
+      run: |
+        npm install
+    - name: Install Compose
+      shell: bash
+      run: |
+        set -x
+        set -e
+        arch="$(uname)-$(uname -m)"
+        flavor=$(echo $arch | tr '[:upper:]' '[:lower:]' )
+        
+        DOWNLOAD_URL="https://github.com/docker/compose/releases/download/v2.1.0/docker-compose-${flavor}"
+        if [[ "v2.1.0" == "latest" ]]; then
+          DOWNLOAD_URL=$(curl -fL https://api.github.com/repos/docker/compose/releases/latest | jq -r '.assets[] | select(.name == "docker-compose-linux-x86_64") | .browser_download_url')
+        fi
+        
+        echo "Download Compose v2.1.0 for ${flavor} from ${DOWNLOAD_URL}"
+        mkdir -p ~/.docker/cli-plugins/
+        curl -fsSL "$DOWNLOAD_URL" -o ~/.docker/cli-plugins/docker-compose
+        chmod +x ~/.docker/cli-plugins/docker-compose
+    - name: Start containers
+      run: ~/.docker/cli-plugins/docker-compose -f "docker-compose.yml" up -d --force-recreate
+    - name: Run tests
+      run: npm run test_coverage
+#    - name: Upload coverage reports to Codecov
+#      uses: codecov/codecov-action@v3
+#      env:
+#        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+#    - name: Stop containers
+#      if: always()
+#      run: docker rm rabbit-test
+#      shell: bash
+    - name: Stop containers
+      if: always()
+      run: ~/.docker/cli-plugins/docker-compose down
