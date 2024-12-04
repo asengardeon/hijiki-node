@@ -1,5 +1,4 @@
 import HijikiQueueExchange from "../../src/broker/models/queue_exchange";
-import Publisher from "../../src/publisher/HijikiPublisher";
 import {HijikiBrokerFactory} from "../../src/broker/HijikiBrokerFacotry";
 
 
@@ -25,16 +24,19 @@ class BrokerMock {
             .with_heartbeat_interval(30)
             .with_auto_ack(false).build()
 
-        this.pub = new Publisher("localhost", "user", "pwd", 5672)
         this.addSubscribers(this.broker)
         this.broker.run()
         return this
     }
 
     addSubscribers = (broker) => {
-       broker.add_subscriber("teste1", (msg)=>{
-           this.result_event_list.push(`received event with message: ${msg}`)
-       })
+        broker.add_subscriber("teste1", (msg)=>{
+            this.result_event_list.push(`received event with message: ${msg}`)
+        })
+        broker.add_subscriber("fila_erro", (msg)=>{
+            this.result_event_list.push(`received event with message from fila_erro: ${msg}`)
+            throw new Error("forçando o erro")
+        })
     }
 
 
@@ -68,4 +70,10 @@ test('test_consume_a_message', async () =>{
     await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
     await delay(1000)
     expect(mock.result_event_list.length).toBe(1)
+}, 10000)
+
+xtest('internal_consumer_erro', async () => {
+    await mock.broker.publish_message('erro_event', '{"value": "This is the error message"}')
+    await delay(3000)
+    expect(mock.result_event_list.length).toBeGreaterThan(10)
 }, 10000)

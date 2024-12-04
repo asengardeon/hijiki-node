@@ -26,22 +26,26 @@ class Consumer{
         }
     }
 
-    get_args_for_queue() {
+    internal_create_queues(is_dlq =  false){
         const routing_key = "*"
         this.clear_callbacks()
         let result_queues = []
+        const sufix = is_dlq?"_dlq":""
         for (const q of this.broker.queues_exchanges) {
-            let name = q.name
-            const task_exchange = {exchange: `${q.exchange_name}`, type: 'topic'}
-            const qargs = {
-                'x-queue-type': 'quorum',
-                'x-dead-letter-exchange': `${q.exchange_name}_dlq`, 'x-delivery-limit': 10
+            let name = q.name+sufix
+            const task_exchange = {exchange: `${q.exchange_name}${sufix}`, type: 'topic'}
+
+            let qargs = {"x-queue-type": 'quorum'}
+            if (!is_dlq){
+                qargs = {
+                    "x-queue-type": 'quorum',
+                    "x-dead-letter-exchange": `${q.exchange_name}_dlq`, 'x-delivery-limit': 10
+                }
             }
 
             const queue = {
                 queue: name,
-                queueOptions: {durable: true},
-                arguments: qargs,
+                queueOptions: {durable: true, arguments: qargs},
                 exchanges: [task_exchange],
                 queueBindings: [{exchange: task_exchange.exchange, routingKey: routing_key}]
             }
@@ -50,15 +54,20 @@ class Consumer{
         return result_queues
     }
 
+    create_queues() {
+        const result = this.internal_create_queues(false)
+        const result_dlq = this.internal_create_queues(true)
+        return result.concat(result_dlq)
+    }
+
 
     task(queue_name, callback){
-        let queues = this.get_args_for_queue()
+        let queues = this.create_queues().filter(item => item.queue === queue_name || item.queue === `${queue_name}_dlq`)
+
         for (const q of queues) {
-            let sub = this.broker.connection.createConsumer(q, async (msg) => {
+            let sub = this.broker.connection.createConsumer(q, (msg) => {
                 try{
-                    let status = ConsumerStatus.ACK
-                    this.process_message(msg.body, callback).then(r => status = r );
-                    return status
+                    this.process_message(msg.body, callback);
                 }catch (err){
                     if(!this.broker.auto_ack)
                         return ConsumerStatus.REQUEUE
