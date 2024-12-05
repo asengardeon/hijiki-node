@@ -61,19 +61,19 @@ const delay = (t, val) => {
 
 
 test('test publish one message', async () => {
-    await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
+    mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
     await delay(1000)
     expect(mock.result_event_list.length).toBe(1)
 }, 10000)
 
 test('test_consume_a_message', async () =>{
-    await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
+    mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
     await delay(1000)
     expect(mock.result_event_list.length).toBe(1)
 }, 10000)
 
-xtest('internal_consumer_erro', async () => {
-    await mock.broker.publish_message('erro_event', '{"value": "This is the error message"}')
+test('internal_consumer_erro', async () => {
+    mock.broker.publish_message('erro_event', '{"value": "This is the error message"}')
     await delay(3000)
     expect(mock.result_event_list.length).toBeGreaterThan(10)
 }, 10000)

@@ -7,9 +7,8 @@ class Consumer{
         this.subs = []
     }
 
-    async process_message(msg, callback){
+    process_message(msg, callback){
         callback(msg);
-        return ConsumerStatus.ACK
     }
 
     clear_callbacks(){
@@ -62,7 +61,7 @@ class Consumer{
 
 
     task(queue_name, callback){
-        let queues = this.create_queues().filter(item => item.queue === queue_name || item.queue === `${queue_name}_dlq`)
+        let queues = this.create_queues().filter(item => item.queue === queue_name)
 
         for (const q of queues) {
             let sub = this.broker.connection.createConsumer(q, (msg) => {
