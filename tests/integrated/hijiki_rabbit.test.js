@@ -1,6 +1,5 @@
 import {BrokerMock, delay} from "./base";
 
-
 let mock
 
 beforeEach(async () => {
@@ -13,14 +12,16 @@ afterEach(() => {
 
 
 test('test publish one message', async () => {
+    await delay(1000)
     mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
     await delay(1000)
-    expect(mock.result_event_list.length).toBe(1)
+    expect(mock.result_event_list.length).toEqual(1)
 }, 10000)
 
 test('test_consume_a_message', async () =>{
+    await delay(3000)
     mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
-    await delay(1000)
+    await delay(3000)
     expect(mock.result_event_list.length).toEqual(1)
 }, 10000)
 
@@ -29,7 +30,7 @@ test('test_consume_a_message', async () =>{
 test('test_consume_a_message_failed_with_auto_ack_dont_go_to_DLQ', async () => {
     mock.broker.with_auto_ack(true)
     mock.broker.publish_message('erro_event', `{"value": "This is the error message" ${Date.now()}}`)
-    await delay(1000)
+    await delay(3000)
     expect(mock.result_event_list.length).toEqual(1)
 }, 10000)
 
