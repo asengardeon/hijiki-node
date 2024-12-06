@@ -1,48 +1,7 @@
-import HijikiQueueExchange from "../../src/broker/models/queue_exchange";
-import {HijikiBrokerFactory} from "../../src/broker/HijikiBrokerFacotry";
-
-
-class BrokerMock {
-
-    constructor() {
-        this.result_event_list = []
-    }
-
-    init = async () => {
-        let qs = [
-            new HijikiQueueExchange('teste1', 'teste1_event'),
-            new HijikiQueueExchange('fila_erro', 'erro_event'),
-            new HijikiQueueExchange('without_dlq', 'without_dlq'),
-        ]
-
-        this.broker = await new HijikiBrokerFactory().get_instance()
-            .with_queues_exchange(qs)
-            .with_username("user")
-            .with_password("pwd")
-            .with_host("localhost")
-            .with_port(5672)
-            .with_heartbeat_interval(30)
-            .with_auto_ack(false).build()
-
-        this.addSubscribers(this.broker)
-        this.broker.run()
-        return this
-    }
-
-    addSubscribers = (broker) => {
-        broker.add_subscriber("teste1", (msg)=>{
-            this.result_event_list.push(`received event with message: ${msg}`)
-        })
-        broker.add_subscriber("fila_erro", (msg)=>{
-            this.result_event_list.push(`received event with message from fila_erro: ${msg}`)
-            throw new Error("forçando o erro")
-        })
-    }
-
-
-}
+import {BrokerMock, delay} from "./base";
 
 let mock
+
 beforeEach(async () => {
     mock = await new BrokerMock().init()
 });
@@ -51,29 +10,41 @@ afterEach(() => {
     mock.broker.terminate()
 })
 
-const delay = (t, val) => {
-    return new Promise(function(resolve) {
-        setTimeout(function() {
-            resolve(val);
-        }, t);
-    });
-}
-
 
 test('test publish one message', async () => {
-    await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
     await delay(1000)
-    expect(mock.result_event_list.length).toBe(1)
+    mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
+    await delay(1000)
+    expect(mock.result_event_list.length).toEqual(1)
 }, 10000)
 
 test('test_consume_a_message', async () =>{
-    await mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
-    await delay(1000)
-    expect(mock.result_event_list.length).toBe(1)
+    await delay(3000)
+    mock.broker.publish_message('teste1_event', '{"value": "This is the message"}')
+    await delay(3000)
+    expect(mock.result_event_list.length).toEqual(1)
 }, 10000)
 
-xtest('internal_consumer_erro', async () => {
-    await mock.broker.publish_message('erro_event', '{"value": "This is the error message"}')
+
+
+test('test_consume_a_message_failed_with_auto_ack_dont_go_to_DLQ', async () => {
+    mock.broker.with_auto_ack(true)
+    mock.broker.publish_message('erro_event', `{"value": "This is the error message" ${Date.now()}}`)
     await delay(3000)
-    expect(mock.result_event_list.length).toBeGreaterThan(10)
+    expect(mock.result_event_list.length).toEqual(1)
 }, 10000)
+
+
+
+test('test_consume_a_message_dlq', async () => {
+    mock.broker.add_new_consumer('fila_erro_dlq', (msg) => {
+        mock.result_event_list_dlq.push(`received event with message from fila_erro: ${msg} ${Date.now()}`)
+        console.log("EITA PASSOU AQUI")
+    }, true)
+    await delay(5000)
+    mock.broker.publish_message('erro_event', `{"value": "This is the error message"} ${Date.now()}`)
+    await delay(1000)
+    expect(mock.result_event_list_dlq.length).toEqual(1)
+}, 10000)
+
+

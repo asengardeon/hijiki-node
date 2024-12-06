@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - development
       - fix/**
       - feature/**
       - chore/**
@@ -37,13 +38,18 @@ jobs:
         if [[ "v2.1.0" == "latest" ]]; then
           DOWNLOAD_URL=$(curl -fL https://api.github.com/repos/docker/compose/releases/latest | jq -r '.assets[] | select(.name == "docker-compose-linux-x86_64") | .browser_download_url')
         fi
-        
         echo "Download Compose v2.1.0 for ${flavor} from ${DOWNLOAD_URL}"
         mkdir -p ~/.docker/cli-plugins/
         curl -fsSL "$DOWNLOAD_URL" -o ~/.docker/cli-plugins/docker-compose
         chmod +x ~/.docker/cli-plugins/docker-compose
+
     - name: Start containers
       run: ~/.docker/cli-plugins/docker-compose -f "docker-compose.yml" up -d --force-recreate
+    - name: Await container
+      shell: bash
+      run: |
+        sleep 5
+
     - name: Run tests
       run: npm run test_coverage
 #    - name: Upload coverage reports to Codecov
@@ -57,3 +63,7 @@ jobs:
     - name: Stop containers
       if: always()
       run: ~/.docker/cli-plugins/docker-compose down
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}

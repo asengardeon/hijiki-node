@@ -7,9 +7,8 @@ class Consumer{
         this.subs = []
     }
 
-    async process_message(msg, callback){
+    process_message(msg, callback){
         callback(msg);
-        return ConsumerStatus.ACK
     }
 
     clear_callbacks(){
@@ -60,29 +59,29 @@ class Consumer{
         return result.concat(result_dlq)
     }
 
-
-    task(queue_name, callback){
-        let queues = this.create_queues().filter(item => item.queue === queue_name || item.queue === `${queue_name}_dlq`)
-
-        for (const q of queues) {
-            let sub = this.broker.connection.createConsumer(q, (msg) => {
-                try{
-                    this.process_message(msg.body, callback);
-                }catch (err){
-                    if(!this.broker.auto_ack)
-                        return ConsumerStatus.REQUEUE
-                }
-            })
-
-            sub.on('error', (err) => {
-                // Maybe the consumer was cancelled, or the connection was reset before a
-                // message could be acknowledged.
-                console.log(`Consumer error for ${queue_name}`, err)
-                if(!this.broker.auto_ack)
+    crete_consumer(queue, callback, is_dlq){
+        let sub = this.broker.connection.createConsumer(queue, (msg) => {
+            try{
+                this.process_message(msg.body, callback);
+                return ConsumerStatus.ACK
+            }catch (err){
+                if(!this.broker.auto_ack && !is_dlq)
                     return ConsumerStatus.REQUEUE
-            })
-            this.subs.push(sub)
-        }
+            }
+        })
+
+        sub.on('error', (err) => {
+            // Maybe the consumer was cancelled, or the connection was reset before a
+            // message could be acknowledged.
+            console.log(`Consumer error for ${queue_name}`, err)
+            if(!this.broker.auto_ack && !is_dlq)
+                return ConsumerStatus.REQUEUE
+        })
+        this.subs.push(sub)
+    }
+    task(queue_name, callback, is_dlq){
+        let q = this.create_queues().find(item => item.queue === queue_name)
+        this.crete_consumer(q, callback, is_dlq)
         return this
     }
 }

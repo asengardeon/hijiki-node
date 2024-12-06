@@ -23,9 +23,9 @@ class HijikiRabbit extends HijikiBroker {
     terminate() {
         this.connection.close()
         this.consumers.forEach(consumer => {
-            consumer.subs.forEach(sub => {
+            for (const sub of consumer.subs) {
                 sub.close()
-            })
+            }
         })
     }
 
@@ -152,8 +152,12 @@ class HijikiRabbit extends HijikiBroker {
         }
 
     }
-    add_subscriber = (queue, func) => {
-        this.callbacks.set(queue, func)
+    add_subscriber = (queue, func, is_dlq=false) => {
+        this.callbacks.set(queue, {f: func, is_dlq: is_dlq})
+    }
+
+    add_new_consumer(queue, func, is_dlq=false) {
+        this.consumers.push(new Consumer(this).task(queue, func, is_dlq))
     }
 
     run = () =>{
@@ -166,7 +170,8 @@ class HijikiRabbit extends HijikiBroker {
         })
 
         this.callbacks.forEach((value, key) => {
-            this.consumers.push(new Consumer(this).task(key, value))
+            let {f, is_dlq} = value
+            this.add_new_consumer(key, f, is_dlq)
         })
     }
 }
