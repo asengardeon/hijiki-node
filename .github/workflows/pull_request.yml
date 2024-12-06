@@ -43,7 +43,7 @@ jobs:
         mkdir -p ~/.docker/cli-plugins/
         curl -fsSL "$DOWNLOAD_URL" -o ~/.docker/cli-plugins/docker-compose
         chmod +x ~/.docker/cli-plugins/docker-compose
-        sleep 5
+        sleep 10
     - name: Start containers
       run: ~/.docker/cli-plugins/docker-compose -f "docker-compose.yml" up -d --force-recreate
 
