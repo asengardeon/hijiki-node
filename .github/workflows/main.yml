@@ -1,4 +1,4 @@
-name: Validate Pull Request
+name: CI/CD to MAIN BRANCH
 
 on:
   push:
