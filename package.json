@@ -3,9 +3,6 @@
   "version": "{{VERSION_PLACEHOLDER}}",
   "description": "Node Rabbit wrapper library to simplify to use Exchanges and Queues",
   "main": "main.js",
-  "engines": {
-    "node": "^18.18.0"
-  },
   "keywords": [
     "RabbitMQ",
     "lib",
