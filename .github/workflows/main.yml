@@ -63,7 +63,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
     # RELEASE
     - name: Install dependencies and build 🔧
-      run: npm ci && npm run build
+      run: npm ci
     - name: Publish package on NPM 📦
       run: npm publish
       env:
