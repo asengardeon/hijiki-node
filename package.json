@@ -19,7 +19,6 @@
     "test": "jest",
     "test_coverage": "jest --coverage"
   },
-  "private": true,
   "dependencies": {
     "rabbitmq-client": "^5.0.1"
   },
