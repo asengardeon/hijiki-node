@@ -1,5 +1,5 @@
 {
-  "name": "hijiki-node",
+  "name": "hijiki",
   "version": "{{VERSION_PLACEHOLDER}}",
   "description": "Node Rabbit wrapper library to simplify to use Exchanges and Queues",
   "main": "main.js",
