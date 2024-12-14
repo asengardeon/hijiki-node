@@ -1,16 +1,11 @@
 name: Validate Pull Request
 
 on:
-  pull_request:
+  push:
     branches:
-      - development
-      - fix/**
-      - feature/**
-      - chore/**
-      - doc/**
-
+      - main
 jobs:
-  build_on_pull_request:
+  build_on_merge_to_main:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,10 +16,19 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '>=18.18.0'
-
+        registry-url: 'https://registry.npmjs.org'
+    #RELEASE VERSION
     - name: Install dependencies npm
       run: |
         npm install
+    - name: Extract version number
+      id: version_number
+      run: echo "VERSION_NUMBER=1.0.${{github.run_number}}" >> $GITHUB_OUTPUT
+    - name: Update version in package.json
+      run: >-
+        echo 'version is ${{ steps.version_number.outputs.VERSION_NUMBER }}' &&
+        sed -i 's/{{VERSION_PLACEHOLDER}}/1.0.${{github.run_number}}/g' package.json
+    #-=---------
     - name: Install Compose
       shell: bash
       run: |
@@ -48,7 +52,6 @@ jobs:
       shell: bash
       run: |
         sleep 5
-
     - name: Run tests
       run: npm run test_coverage
     - name: Stop containers
@@ -58,3 +61,10 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+    # RELEASE
+    - name: Install dependencies and build 🔧
+      run: npm ci && npm run build
+        - name: Publish package on NPM 📦
+          run: npm publish
+          env:
+            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

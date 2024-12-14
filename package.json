@@ -1,8 +1,23 @@
 {
   "name": "hijiki-node",
-  "version": "1.0.0",
-  "description": "",
-  "main": "fake_test.js",
+  "version": "{{VERSION_PLACEHOLDER}}",
+  "description": "Node Rabbit wrapper library to simplify to use Exchanges and Queues",
+  "main": "main.js",
+  "engines": {
+    "node": "^18.18.0"
+  },
+  "keywords": [
+    "RabbitMQ",
+    "lib",
+    "microservice",
+    "node",
+    "library"
+  ],
+  "author": "Leandro Vilson Battisti",
+  "repository": {
+    "type": "git",
+      "url": "git://github.com/asengardeon/hijiki-node.git"
+  },
   "scripts": {
     "test": "jest",
     "test_coverage": "jest --coverage"
