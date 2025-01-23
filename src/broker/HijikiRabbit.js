@@ -75,8 +75,8 @@ class HijikiRabbit extends HijikiBroker {
         return this
     }
 
-    async get_connection(force_crete_new) {
-        if ((!this.connection) || (force_crete_new === true)) {
+    async get_connection(force_create_new) {
+        if ((!this.connection) || (force_create_new === true)) {
             this.connection = new Connection(get_broker_url())
             this.connection.on('error', (err) => {
                 console.log('RabbitMQ connection error', err)
@@ -89,33 +89,40 @@ class HijikiRabbit extends HijikiBroker {
     }
 
     ping = async () => {
-        let success_ping = false
+        let success_ping = true
         let rabbit
         let pub
         let sub
+        const pingQueue = 'ping-queue';
+        const pingExchange = 'ping-exchange';
+        const pingTopicType = 'topic';
         try {
             rabbit = await this.get_connection()
             sub = rabbit.createConsumer({
-                queue: 'ping-queue',
-                exchanges: [{exchange: 'ping-exchange', type: 'topic'}],
-                queueBindings: [{exchange: 'ping-exchange', routingKey: 'Pong'}],
+                queue: pingQueue,
+                exchanges: [{exchange: pingExchange, type: pingTopicType}],
+                queueBindings: [{exchange: pingExchange, routingKey: 'Pong'}],
             }, async (msg) => {
                 console.log('received message ping', msg)
                 success_ping = true
             })
 
+            sub.on('error', (err) => {
+                success_ping = false
+                console.log(err)
+            })
             pub = rabbit.createPublisher({
                 // Enable publish confirmations, similar to consumer acknowledgements
                 confirm: true,
                 // Optionally ensure the existence of an exchange before we use it
-                exchanges: [{exchange: 'ping-exchange', type: 'topic'}]
+                exchanges: [{exchange: pingExchange, type: pingTopicType}]
             })
-            await pub.send(
-                {exchange: 'ping-exchange', routingKey: 'Pong'}, // metadata
-                "PING MESSAGE from Hijiki") // message content
 
+            await pub.send(
+                {exchange: pingExchange, routingKey: 'Pong'}, // metadata
+                "PING MESSAGE from Hijiki") // message content
         }
-        catch (AMQPConnectionError){
+        catch (Error){
             success_ping = false
         }
         finally {
@@ -126,10 +133,6 @@ class HijikiRabbit extends HijikiBroker {
             if (sub) {
                 await sub.close()
             }
-            if (rabbit) {
-                await rabbit.close()
-            }
-
         }
         return success_ping
     }
