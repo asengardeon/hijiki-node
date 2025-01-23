@@ -11,9 +11,6 @@
   "dependencies": {
     "rabbitmq-client": "^5.0.1"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
     "babel-jest": "^29.7.0",
