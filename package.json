@@ -1,11 +1,8 @@
 {
-  "name": "hijiki-node",
+  "name": "hijiki",
   "version": "{{VERSION_PLACEHOLDER}}",
   "description": "Node Rabbit wrapper library to simplify to use Exchanges and Queues",
   "main": "main.js",
-  "engines": {
-    "node": "^18.18.0"
-  },
   "keywords": [
     "RabbitMQ",
     "lib",
@@ -22,7 +19,6 @@
     "test": "jest",
     "test_coverage": "jest --coverage"
   },
-  "private": true,
   "dependencies": {
     "rabbitmq-client": "^5.0.1"
   },
