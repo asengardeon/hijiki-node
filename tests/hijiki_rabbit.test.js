@@ -21,11 +21,6 @@ test('Test creqte class and attributes is the default', () =>{
 })
 
 test('Test create connection to cluster', async () =>{
-    process.env[BROKER_CLUSTER_SERVER] = 'server:5672,serverB:5672'
-    process.env[BROKER_SERVER] = 'singleserver'
-    process.env[BROKER_USERNAME] = 'usr'
-    process.env[BROKER_PWD] = 'password'
-    process.env[BROKER_PORT] = '5427'
     const constructor = jest
      .spyOn(Connection.prototype, 'constructor')
      .mockImplementation((propsOrUrl) => {
