@@ -2,6 +2,8 @@ import HijikiBroker from "./HijikiBroker";
 import {Connection} from "rabbitmq-client";
 import {get_broker_url, init_os_environ} from "./brokerData";
 import Consumer from "../consumer/HijikiConsumer";
+import {SINGLE_NODE} from "./consts";
+
 
 class HijikiRabbit extends HijikiBroker {
 
@@ -77,7 +79,12 @@ class HijikiRabbit extends HijikiBroker {
 
     async get_connection(force_create_new) {
         if ((!this.connection) || (force_create_new === true)) {
-            this.connection = new Connection(get_broker_url())
+            const uri = get_broker_url()
+            if (uri.type === SINGLE_NODE){
+                this.connection = new Connection(uri.host)
+            } else {
+                this.connection = new Connection({hosts: uri.host})
+            }
             this.connection.on('error', (err) => {
                 console.log('RabbitMQ connection error', err)
             })

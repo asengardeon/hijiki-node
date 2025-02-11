@@ -1,3 +1,4 @@
+import {CLUSTER_NODE, SINGLE_NODE} from "./consts";
 
 const BROKER_PORT = "BROKER_PORT"
 const BROKER_PWD = "BROKER_PWD"
@@ -34,11 +35,14 @@ const get_broker_url = () => {
     const username = BROKER_USERNAME in process.env ? process.env[BROKER_USERNAME] : null
     const pwd = BROKER_PWD in process.env ? process.env[BROKER_PWD] : null
     const port = BROKER_PORT in process.env ? process.env[BROKER_PORT] : "5672"
-    let res
-    if (cluster_server)
-        res = build_cluster_uri(cluster_server, username, pwd)
-    else
-        res = server ? `amqp://${username}:${pwd}@${server}:${port}`  : 'amqp://rabbitmq:rabbitmq@localhost:5672'
+    let res = {type: null, host: null}
+    if (cluster_server){
+        res.type = CLUSTER_NODE
+        res.host = cluster_server.split(',')
+    } else {
+        res.type = SINGLE_NODE
+        res.host = server ? `amqp://${username}:${pwd}@${server}:${port}` : 'amqp://rabbitmq:rabbitmq@localhost:5672'
+    }
     return res
 }
 
