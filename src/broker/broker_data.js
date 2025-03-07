@@ -8,10 +8,10 @@ const RABBIT_TYPE = "RABBITMQ"
 
 
 const build_cluster_uri = (cluster_server, username, password) =>{
-    let servers = cluster_server.split(',')
-    let uri = ""
-    servers.forEach(server => {uri += `amqp://${username}:${password}@${server};`})
-    return uri
+    const serverList = cluster_server.split(',')
+    return serverList.map(server =>
+        `amqp://${username}:${password}@${server}`
+    )
 }
 
 const init_os_environ = (host, username, password, port, cluster_servers) => {
