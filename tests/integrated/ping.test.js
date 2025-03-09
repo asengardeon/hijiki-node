@@ -1,4 +1,4 @@
-import HijikiBrokerFactory from "../../src/broker/hijiki_broker_factory";
+import HijikiBrokerFactory from "../../src/factories/hijiki_broker_factory";
 
 test('test_success_ping', async () => {
     let broker = new HijikiBrokerFactory()

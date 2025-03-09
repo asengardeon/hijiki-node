@@ -1,4 +1,4 @@
-import HijikiBroker from "./hijiki_broker";
+import HijikiBroker from "../broker/hijiki_broker";
 const Broker = require('rascal').BrokerAsPromised;
 
 class HijikiRabbit extends HijikiBroker {

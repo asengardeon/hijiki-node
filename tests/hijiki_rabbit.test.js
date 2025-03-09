@@ -1,4 +1,4 @@
-import HijikiRabbit from "../src/broker/hijiki_rabbit";
+import HijikiRabbit from "../src/adapter/hijiki_rabbit";
 
 test('Teste HijikiRabbit contructor', () => {
     let h = new HijikiRabbit()
