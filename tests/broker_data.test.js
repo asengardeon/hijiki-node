@@ -4,7 +4,7 @@ import {
     BROKER_SERVER,
     BROKER_USERNAME,
     get_broker_url
-} from "../src/broker/broker_data";
+} from "../src/broker/brokerData";
 
 
 beforeEach(() => {
