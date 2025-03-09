@@ -1,4 +1,5 @@
 import {get_broker_url, init_os_environ} from "./broker_data";
+import {InvalidBrokerParameter} from "./exceptions";
 
 class BrokerConfig {
     constructor() {
@@ -48,6 +49,9 @@ class BrokerConfig {
     }
 
     withQueue(queueName, exchangeName) {
+        if (!queueName || !exchangeName) {
+            throw new InvalidBrokerParameter('For withQueue, queueName and exchangeName must be defined')
+        }
         const dlqName = `${queueName}_dlq`;
         const dlqExchange = `${exchangeName}_dlq`;
 
@@ -76,6 +80,9 @@ class BrokerConfig {
     }
 
     withExchange(exchangeName) {
+        if (!exchangeName) {
+            throw new InvalidBrokerParameter('For withExchange, exchangeName must be defined')
+        }
         this.config.vhosts["/"].exchanges[exchangeName] = {
             type: "topic"
         };
@@ -91,6 +98,9 @@ class BrokerConfig {
     }
 
     withBinding(queueName, exchangeName) {
+        if (!queueName || !exchangeName) {
+            throw new InvalidBrokerParameter('For withBinding, queueName and exchangeName must be defined')
+        }
         this.config.vhosts["/"].bindings[`${exchangeName}->${queueName}`] = {
             source: exchangeName,
             destination: queueName,

@@ -15,27 +15,27 @@ class HijikiManager {
     }
 
     with_queues_exchange(queues_exchange){
-        this.config.queues_exchange = queues_exchange
+        this.config.with_queues_exchange(queues_exchange)
         return this;
     }
 
     with_username(username){
-        this.config.username = username
+        this.config.with_username(username)
         return this;
     }
 
     with_password(password){
-        this.config.password = password
+        this.config.with_password(password)
         return this;
     }
 
     with_host(host){
-        this.config.host = host
+        this.config.with_host(host)
         return this;
     }
 
     with_port(port){
-        this.config.port = port
+        this.config.with_port(port)
         return this;
     }
 
@@ -94,6 +94,11 @@ class HijikiManager {
                     ackOrNack(err);
                 }
             }
+        }).on('error', function(err) {
+            console.error('Subscriber error', err)
+        }).on('invalid_content', function(err, message, ackOrNack) {
+            console.error('Invalid content', err)
+            ackOrNack(err)
         });
     }
     async run() {
