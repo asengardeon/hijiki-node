@@ -34,6 +34,11 @@ class HijikiManager {
         return this;
     }
 
+    with_cluster_servers(servers){
+        this.config.with_cluster_servers(servers)
+        return this
+    }
+
     with_port(port){
         this.config.with_port(port)
         return this;

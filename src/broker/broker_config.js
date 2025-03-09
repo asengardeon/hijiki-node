@@ -48,6 +48,10 @@ class BrokerConfig {
         return this;
     }
 
+    with_cluster_servers(servers){
+        this.cluster_servers = servers
+    }
+
     withQueue(queueName, exchangeName) {
         if (!queueName || !exchangeName) {
             throw new InvalidBrokerParameter('For withQueue, queueName and exchangeName must be defined')
