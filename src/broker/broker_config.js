@@ -56,14 +56,18 @@ class BrokerConfig {
 
         this.config.vhosts["/"].queues[queueName] = {
             options: {
-                "x-queue-type": "quorum",
-                "x-dead-letter-exchange": dlqExchange,
-                "x-delivery-limit": 10
+                arguments: {
+                    "x-queue-type": "quorum",
+                    "x-dead-letter-exchange": dlqExchange,
+                    "x-delivery-limit": 10
+                }
             }
         };
 
         this.config.vhosts["/"].queues[dlqName] = {
-            options: { "x-queue-type": "quorum" }
+            options: {arguments: {
+                 "x-queue-type": "quorum" }
+            }
         };
 
         this.withBinding(queueName, exchangeName);
