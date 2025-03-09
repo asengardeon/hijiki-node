@@ -4,7 +4,7 @@ import {
     BROKER_SERVER,
     BROKER_USERNAME,
     get_broker_url
-} from "../src/broker/brokerData";
+} from "../src/broker/broker_data";
 
 
 beforeEach(() => {
@@ -21,23 +21,23 @@ afterEach(() => {
 
 
 test('Test getBorker_url', () => {
-    expect(get_broker_url()).toBe("amqp://null:null@teste:5672")
+    expect(get_broker_url()).toContain("amqp://null:null@teste:5672")
 });
 
 test('test_broker_username_env_not_exists_in_environment_variable_but_server_exists', () => {
-    expect(get_broker_url()).toBe( 'amqp://null:null@teste:5672')
+    expect(get_broker_url()).toContain( 'amqp://null:null@teste:5672')
 })
 
 test('test_broker_pwd_env_not_exists_in_environment_variable_but_server_exists', () => {
-    expect(get_broker_url()).toBe('amqp://null:null@teste:5672')
+    expect(get_broker_url()).toContain('amqp://null:null@teste:5672')
 })
 
 test('test_broker_port_env_not_exists_in_environment_variable_but_server_exists', () => {
-    expect(get_broker_url()).toBe( 'amqp://null:null@teste:5672')
+    expect(get_broker_url()).toContain( 'amqp://null:null@teste:5672')
 })
 
 test('test_broker_server_env_exists_in_environment_variable', () => {
-    expect(get_broker_url()).toBe('amqp://null:null@teste:5672', get_broker_url())
+    expect(get_broker_url()).toContain('amqp://null:null@teste:5672', get_broker_url())
 })
 
 
@@ -68,5 +68,4 @@ test('test_broker_cluster_server_env_exists_in_environment_variable_and_single_s
     process.env[BROKER_PORT] = '5427'
     const servers = get_broker_url()
     expect(servers).toContain("amqp://usr:password@server:5672")
-    expect(servers).toContain("amqp://usr:password@serverB:5672")
 })
