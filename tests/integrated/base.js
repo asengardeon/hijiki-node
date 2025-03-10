@@ -1,11 +1,15 @@
-import HijikiQueueExchange from "../../src/broker/models/queue_exchange";
-import {HijikiBrokerFactory} from "../../src/broker/HijikiBrokerFacotry";
+import HijikiQueueExchange from "../../src/models/queue_exchange"
+import HijikiBrokerFactory from "../../src/factories/hijiki_broker_factory"
 
 class BrokerMock {
 
     constructor() {
         this.result_event_list = []
         this.result_event_list_dlq = []
+    }
+
+    terminate = async () =>{
+        this.broker.terminate()
     }
 
     init = async () => {
@@ -21,19 +25,18 @@ class BrokerMock {
             .with_password("pwd")
             .with_host("localhost")
             .with_port(5672)
-            .with_heartbeat_interval(30)
-            .with_auto_ack(false).build()
+            .build()
 
         this.addSubscribers(this.broker)
-        this.broker.run()
+        await this.broker.run()
         return this
     }
 
-    addSubscribers = (broker) => {
-        broker.add_subscriber("teste1", (msg)=>{
+    addSubscribers = async (broker) => {
+        await broker.add_subscriber("teste1", (msg)=>{
             this.result_event_list.push(`received event with message: ${msg}`)
         })
-        broker.add_subscriber("fila_erro", (msg)=>{
+        await broker.add_subscriber("fila_erro", (msg)=>{
             this.result_event_list.push(`received event with message from fila_erro: ${msg}`)
             throw new Error("forçando o erro")
         })

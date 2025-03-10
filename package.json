@@ -20,7 +20,7 @@
     "test_coverage": "jest --coverage"
   },
   "dependencies": {
-    "rabbitmq-client": "^5.0.1"
+    "rascal": "*"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",

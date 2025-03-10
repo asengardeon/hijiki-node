@@ -1,5 +1,3 @@
-import {CLUSTER_NODE, SINGLE_NODE} from "./consts";
-
 const BROKER_PORT = "BROKER_PORT"
 const BROKER_PWD = "BROKER_PWD"
 const BROKER_USERNAME = "BROKER_USERNAME"
@@ -9,10 +7,10 @@ const RABBIT_TYPE = "RABBITMQ"
 
 
 const build_cluster_uri = (cluster_server, username, password) =>{
-    let servers = cluster_server.split(',')
-    let uri = ""
-    servers.forEach(server => {uri += `amqp://${username}:${password}@${server};`})
-    return uri
+    const serverList = cluster_server.split(',')
+    return serverList.map(server =>
+        `amqp://${username}:${password}@${server}`
+    )
 }
 
 const init_os_environ = (host, username, password, port, cluster_servers) => {
@@ -35,13 +33,11 @@ const get_broker_url = () => {
     const username = BROKER_USERNAME in process.env ? process.env[BROKER_USERNAME] : null
     const pwd = BROKER_PWD in process.env ? process.env[BROKER_PWD] : null
     const port = BROKER_PORT in process.env ? process.env[BROKER_PORT] : "5672"
-    let res = {type: null, host: null}
+    let res
     if (cluster_server){
-        res.type = CLUSTER_NODE
-        res.host = cluster_server.split(',')
+        res = build_cluster_uri(cluster_server, username, pwd)
     } else {
-        res.type = SINGLE_NODE
-        res.host = server ? `amqp://${username}:${pwd}@${server}:${port}` : 'amqp://rabbitmq:rabbitmq@localhost:5672'
+        res = [server ? `amqp://${username}:${pwd}@${server}:${port}` : 'amqp://rabbitmq:rabbitmq@localhost:5672']
     }
     return res
 }
