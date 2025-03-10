@@ -27,7 +27,7 @@ jobs:
     - name: Update version in package.json
       run: >-
         echo 'version is ${{ steps.version_number.outputs.VERSION_NUMBER }}' &&
-        sed -i 's/{{VERSION_PLACEHOLDER}}/1.0.${{github.run_number}}/g' package.json
+        sed -i 's/{{VERSION_PLACEHOLDER}}/2.0.${{github.run_number}}/g' package.json
     #-=---------
     - name: Install Compose
       shell: bash
