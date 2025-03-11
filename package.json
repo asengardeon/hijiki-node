@@ -3,6 +3,7 @@
   "version": "{{VERSION_PLACEHOLDER}}",
   "description": "Node Rabbit wrapper library to simplify to use Exchanges and Queues",
   "main": "main.js",
+  "type": "module",
   "keywords": [
     "RabbitMQ",
     "lib",
@@ -22,6 +23,7 @@
   "dependencies": {
     "rascal": "*"
   },
+
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
     "babel-jest": "^29.7.0",
