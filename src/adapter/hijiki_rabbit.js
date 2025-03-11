@@ -1,5 +1,5 @@
 import HijikiBroker from "../broker/hijiki_broker";
-const Broker = require('rascal').BrokerAsPromised;
+import {BrokerAsPromised} from "rascal";
 
 class HijikiRabbit extends HijikiBroker {
     constructor() {
@@ -11,7 +11,7 @@ class HijikiRabbit extends HijikiBroker {
     async connect() {
         if (!this.broker) {
             console.log(this.config)
-            this.broker = await Broker.create(this.config);
+            this.broker = await BrokerAsPromised.create(this.config);
         }
         return this.broker;
     }
