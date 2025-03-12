@@ -1,4 +1,4 @@
-import {BrokerMock, delay} from "./base";
+import {BrokerMock, delay} from "./base.js";
 
 let mock
 

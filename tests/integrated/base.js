@@ -1,5 +1,5 @@
-import HijikiQueueExchange from "../../src/models/queue_exchange"
-import HijikiBrokerFactory from "../../src/factories/hijiki_broker_factory"
+import HijikiQueueExchange from "../../src/models/queue_exchange.js"
+import HijikiBrokerFactory from "../../src/factories/hijiki_broker_factory.js"
 
 class BrokerMock {
 

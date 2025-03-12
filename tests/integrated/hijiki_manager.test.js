@@ -1,6 +1,6 @@
-import HijikiBrokerFactory from "../../src/factories/hijiki_broker_factory";
-import HijikiQueueExchange from "../../src/models/queue_exchange";
-import BrokerConfig from "../../src/broker/broker_config";
+import HijikiBrokerFactory from "../../src/factories/hijiki_broker_factory.js";
+import HijikiQueueExchange from "../../src/models/queue_exchange.js";
+import BrokerConfig from "../../src/broker/broker_config.js";
 
 
 let manager

@@ -1,4 +1,4 @@
-import HijikiBroker from "../broker/hijiki_broker";
+import HijikiBroker from "../broker/hijiki_broker.js";
 import {BrokerAsPromised} from "rascal";
 
 class HijikiRabbit extends HijikiBroker {

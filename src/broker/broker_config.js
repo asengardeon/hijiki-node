@@ -1,5 +1,5 @@
-import {get_broker_url, init_os_environ} from "./broker_data";
-import {InvalidBrokerParameter} from "../exceptions/exceptions";
+import {get_broker_url, init_os_environ} from "./broker_data.js";
+import {InvalidBrokerParameter} from "../exceptions/exceptions.js";
 
 class BrokerConfig {
     constructor() {
