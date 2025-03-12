@@ -1,5 +1,7 @@
 import HijikiBroker from "../broker/hijiki_broker.js";
-import {BrokerAsPromised} from "rascal";
+import pkg from 'rascal';
+const {BrokerAsPromised} = pkg;
+
 
 class HijikiRabbit extends HijikiBroker {
     constructor() {
