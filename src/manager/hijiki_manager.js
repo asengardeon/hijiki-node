@@ -1,5 +1,5 @@
-import HijikiRabbit from "../adapter/hijiki_rabbit";
-import BrokerConfig from "../broker/broker_config";
+import HijikiRabbit from "../adapter/hijiki_rabbit.js";
+import BrokerConfig from "../broker/broker_config.js";
 
 class HijikiManager {
     constructor() {
