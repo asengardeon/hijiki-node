@@ -69,3 +69,26 @@ test('test_broker_cluster_server_env_exists_in_environment_variable_and_single_s
     const servers = get_broker_url()
     expect(servers).toContain("amqp://usr:password@server:5672")
 })
+
+
+test('test_broker_cluster_server_env_exists_in_environment_variable_and_single_server_exists_and_using_heartbeat', () => {
+    process.env[BROKER_CLUSTER_SERVER] = 'server:5672,serverB:5672'
+    process.env[BROKER_SERVER] = 'singleserver'
+    process.env[BROKER_USERNAME] = 'usr'
+    process.env[BROKER_PWD] = 'password'
+    process.env[BROKER_PORT] = '5427'
+    let heartbeat_options = {heartbeat: 10}
+    const servers = get_broker_url(heartbeat_options)
+    expect(servers).toContain("amqp://usr:password@server:5672?heartbeat=10")
+})
+
+test('test_broker_cluster_server_env_exists_in_environment_variable_and_single_server_exists_and_using_heartbeat_greater)than_60', () => {
+    process.env[BROKER_CLUSTER_SERVER] = 'server:5672,serverB:5672'
+    process.env[BROKER_SERVER] = 'singleserver'
+    process.env[BROKER_USERNAME] = 'usr'
+    process.env[BROKER_PWD] = 'password'
+    process.env[BROKER_PORT] = '5427'
+    let heartbeat_options = {heartbeat: 70}
+    const servers = get_broker_url(heartbeat_options)
+    expect(servers).toContain("amqp://usr:password@server:5672?heartbeat=70")
+})

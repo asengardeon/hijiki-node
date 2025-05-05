@@ -6,10 +6,13 @@ const BROKER_CLUSTER_SERVER = "BROKER_CLUSTER_SERVER"
 const RABBIT_TYPE = "RABBITMQ"
 
 
-const build_cluster_uri = (cluster_server, username, password) =>{
+const build_cluster_uri = (cluster_server, username, password, options={}) =>{
     const serverList = cluster_server.split(',')
+    let hb = ''
+    if (options.heartbeat && options.heartbeat > 0)
+        hb = `?heartbeat=${options.heartbeat}`
     return serverList.map(server =>
-        `amqp://${username}:${password}@${server}`
+        `amqp://${username}:${password}@${server}${hb}`
     )
 }
 
@@ -27,7 +30,7 @@ const init_os_environ = (host, username, password, port, cluster_servers) => {
 }
 
 
-const get_broker_url = () => {
+const get_broker_url = (options={}) => {
     const cluster_server =  BROKER_CLUSTER_SERVER in process.env ? process.env[BROKER_CLUSTER_SERVER]: null
     const server = BROKER_SERVER in process.env ? process.env[BROKER_SERVER] : null
     const username = BROKER_USERNAME in process.env ? process.env[BROKER_USERNAME] : null
@@ -35,9 +38,12 @@ const get_broker_url = () => {
     const port = BROKER_PORT in process.env ? process.env[BROKER_PORT] : "5672"
     let res
     if (cluster_server){
-        res = build_cluster_uri(cluster_server, username, pwd)
+        res = build_cluster_uri(cluster_server, username, pwd, options)
     } else {
-        res = [server ? `amqp://${username}:${pwd}@${server}:${port}` : 'amqp://rabbitmq:rabbitmq@localhost:5672']
+        if (options.heartbeat && options.heartbeat > 0)
+            res = [server ? `amqp://${username}:${pwd}@${server}:${port}?heartbeat=${options.heartbeat}` : 'amqp://rabbitmq:rabbitmq@localhost:5672']
+        else
+            res = [server ? `amqp://${username}:${pwd}@${server}:${port}` : 'amqp://rabbitmq:rabbitmq@localhost:5672']
     }
     return res
 }

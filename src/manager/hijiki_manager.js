@@ -63,6 +63,11 @@ class HijikiManager {
         return this;
     }
 
+    with_heartbeat(heartbeat){
+        this.config.with_heartbeat(heartbeat)
+        return this;
+    }
+
     build() {
         this.broker.with_config(this.config.build());
         return this;

@@ -21,6 +21,12 @@ class BrokerConfig {
         this.host = ""
         this.port = 5672
         this.cluster_servers = ""
+        this.heartbeat = 60;
+    }
+
+    with_heartbeat(heartbeat){
+        this.heartbeat = heartbeat
+        return this;
     }
 
     with_queues_exchange(queues_exchange){
@@ -117,7 +123,7 @@ class BrokerConfig {
 
     define_connection () {
         this.config.vhosts["/"].connectionStrategy = "random"
-        this.config.vhosts["/"].connections = get_broker_url()
+        this.config.vhosts["/"].connections = get_broker_url({heartbeat: this.heartbeat})
         return this;
     }
 

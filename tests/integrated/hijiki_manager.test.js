@@ -39,6 +39,7 @@ test('test hijiki manager builder - EXCHANGES', async () => {
 })
 
 
+
 test('test hijiki manager builder - Throws', async () => {
     try{
         manager.config.withQueue('fake')
@@ -64,3 +65,25 @@ test('test hijiki manager builder - Throws', async () => {
         expect(error.message).toBe('For withBinding, queueName and exchangeName must be defined')
     }
 })
+
+
+test('should set the heartbeat value original', async () => {
+    expect(manager.config.heartbeat).toBe(60);
+});
+
+
+test('should set the heartbeat value correctly', async () => {
+    manager = await new HijikiBrokerFactory().get_instance()
+        .with_username("user")
+        .with_password("pwd")
+        .with_host("localhost")
+        .with_port(5672)
+        .withQueue('test_manager_builder', 'test_manager_builder_event')
+        .withExchange('test_manager_builder_2_event')
+        .withBinding('test_manager_builder', 'test_manager_builder_2_event' )
+        .with_heartbeat(37)
+        .build()
+
+
+    expect(manager.config.heartbeat).toBe(37);
+});

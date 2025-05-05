@@ -13,6 +13,8 @@ class HijikiRabbit extends HijikiBroker {
     async connect() {
         if (!this.broker) {
             console.log(this.config)
+            this.config.vhosts['/'].connections.forEach(conn => {console.log(conn)})
+            this.config.vhosts['/'].connections
             this.broker = await BrokerAsPromised.create(this.config);
         }
         return this.broker;
