@@ -42,7 +42,7 @@ test('test_consume_a_message_dlq', async () => {
     await mock.broker.add_new_consumer('fila_erro_dlq', (msg) => {
         mock.result_event_list_dlq.push(`received event with message from fila_erro: ${msg} ${Date.now()}`)
         console.log("EITA PASSOU AQUI")
-    }, true)
+    }, {automaticAck: true})
     await mock.broker.publish_message('erro_event', `{"value": "This is the error message"} ${Date.now()}`)
     await delay(1000)
     expect(mock.result_event_list_dlq.length).toBeGreaterThan(0)

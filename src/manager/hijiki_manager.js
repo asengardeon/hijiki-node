@@ -8,6 +8,7 @@ class HijikiManager {
         this.consumers = [];
         this.config.withExchange("ping_topic")
         this.auto_ack = false
+        this.default_options = {prefetch: 10, automaticAck: false}
     }
 
     async terminate(){
@@ -73,8 +74,8 @@ class HijikiManager {
         return this;
     }
 
-    async add_subscriber(queueName, handler, autoAck = false) {
-        this.consumers.push({ queueName, handler, autoAck });
+    async add_subscriber(queueName, handler, options = {} ) {
+        this.consumers.push({ queueName, handler, options });
     }
 
     async publish_message(topic, message) {
@@ -85,11 +86,12 @@ class HijikiManager {
         }
         await broker.publish(topic, message);
     }
-    async add_new_consumer(queueName, handler, automaticAck) {
+    async add_new_consumer(queueName, handler, options=this.default_options) {
         const broker = await this.broker.connect();
         const subscriptionName = `/` + queueName; // Ajuste para Rascal usar o nome correto da fila
-        const subscription = await broker.subscribe(subscriptionName);
-        const autoAck = automaticAck || this.auto_ack
+        const { ack, ...other_options } = options;
+        const subscription = await broker.subscribe(subscriptionName, other_options);
+        const autoAck = this.auto_ack || options.automaticAck
         subscription.on('message', async (message, content, ackOrNack) => {
             try {
                 if (autoAck) {
@@ -119,8 +121,8 @@ class HijikiManager {
             }
         }
         // Iniciar consumidores nas filas existentes
-        for (const { queueName, handler, automaticAck } of this.consumers) {
-            await this.add_new_consumer(queueName, handler, automaticAck);
+        for (const { queueName, handler, options } of this.consumers) {
+            await this.add_new_consumer(queueName, handler, options);
         }
 
     }
